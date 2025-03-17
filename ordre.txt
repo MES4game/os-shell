@@ -1,0 +1,41 @@
+Core Shell Functionality (Essential)
+====================================
+cd.c – Changing directories is crucial for navigation.
+pwd.c – Displaying the current directory is fundamental.
+exit.c – Exiting the shell is basic but vital.
+echo.c – Important for debugging and scripting.
+exec.c – Core for executing external commands.
+
+Process Management (Next Priority)
+===================================
+jobs.c – Displays background/foreground jobs.
+bg.c – Moves a job to the background.
+fg.c – Brings a background job to the foreground.
+wait.c – Waits for child processes to finish.
+
+File Management (Important but Secondary)
+=========================================
+ls.c – Listing files is crucial for navigation.
+cp.c – Copying files is widely used.
+mv.c – Moving/renaming files is important.
+rm.c – Removing files is common.
+
+File Metadata & Creation (Less Urgent)
+======================================
+stat.c – Displays file information.
+touch.c – Creates empty files or updates timestamps.
+
+User & Group Information (Less Critical)
+========================================
+id.c – Displays user identity.
+groups.c – Displays group membership.
+who.c – Shows logged-in users.
+whoami.c – Displays the current username.
+
+Utility & Miscellaneous (Optional)
+==================================
+basename.c – Extracts filename from a path.
+dirname.c – Extracts the directory path.
+w.c – Shows system uptime and logged-in users.
+printf.c – Useful for formatted output.
+read.c – Reads user input (often handled by read built into shell).
