@@ -4,7 +4,6 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-tesing
     // Project - New shell in C
     // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
     // Date: 2025-03-17
