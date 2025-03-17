@@ -4,10 +4,11 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+
 // Project - New shell in C
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
-// Compiled on Ubuntu 24.04.1 LTS with gcc 13.3.0
+
 
 // Debug flag to print debug messages
 int DEBUG = 0;
