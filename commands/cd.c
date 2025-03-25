@@ -106,7 +106,7 @@ int our_cd(int argc, char *argv[])
     {
         if (getcwd(__cd__cwd, sizeof(__cd__cwd)) != NULL)
         {
-            printf("Current working directory: %s\n", __cd__cwd);
+            // printf("Current working directory: %s\n", __cd__cwd);
             strcpy(__cd__pwd, tmp);
         }
         else
@@ -130,22 +130,28 @@ int test()
     assert(__cd__cwd[0] == '\0');
     assert(__cd__pwd[0] == '\0');
 
+    printf("cwd: %s\n", __cd__cwd);
+
+    char *argv1[] = {"cd", "test"};
+    our_cd(2, argv1);
+    printf("cwd: %s\n", __cd__cwd);
+
+    char *argv3[] = {"cd", "-"};
+    our_cd(2, argv3);
+    printf("cwd: %s\n", __cd__cwd);
+
+    our_cd(2, argv3);
+    printf("cwd: %s\n", __cd__cwd);
+
+    char *argv[] = {"cd", ".."};
+    our_cd(2, argv);
+    printf("cwd: %s\n", __cd__cwd);
+
+    char *argv2[] = {"cd", "~"};
+    our_cd(1, argv2);
+    printf("cwd: %s\n", __cd__cwd);
+
     printf("Success!\n");
-
-    // printf("cwd: %s\n", __cd__cwd);
-
-    // char *argv[] = {"cd", ".."};
-    // our_cd(2, argv);
-    // printf("cwd: %s\n", __cd__cwd);
-
-    // char *argv[] = {"cd", "test"};
-    // our_cd(2, argv);
-    // printf("cwd: %s\n", __cd__cwd);
-
-    // char *argv2[] = {"cd"};
-    // our_cd(1, argv2);
-    // printf("cwd: %s\n", __cd__cwd);
-
     return 0;
 }
 
