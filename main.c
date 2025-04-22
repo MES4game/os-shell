@@ -3,12 +3,14 @@
 // Date: 2025-03-17
 
 
-#include "all.h"
+// #include "all.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <ctype.h>
 
 
 // Debug flag to print debug messages
@@ -21,8 +23,58 @@ int DEBUG = 0;
  * @param argc Reference to the number of arguments for return.
  * @param argv Reference to the arguments for return.
  */
-void parse_line(char *line, int *argc, char *argv[]) {
-    fprintf(stdout, "Parsing line: %s\n", line);
+void parse_line(const char *line, int *argc, char ***argv) {
+    int capacity = 10;
+    *argv = malloc(capacity * sizeof(char *));
+    *argc = 0;
+
+    const char *ptr = line;
+    while (*ptr) {
+        while (isspace((unsigned char)*ptr)) ptr++; // Skip leading spaces
+
+        if (*ptr == '\0') break;
+
+        const char *start;
+        char *arg;
+        int in_quotes = 0;
+        int len = 0;
+
+        start = ptr;
+
+        // Estimate the max argument length
+        arg = malloc(strlen(ptr) + 1);
+        if (!arg) {
+            perror("malloc");
+            exit(1);
+        }
+
+        while (*ptr) {
+            if (*ptr == '\"' || *ptr == '\'') {
+                in_quotes = !in_quotes;
+                ptr++; // Skip the quote
+                continue;
+            }
+
+            if (!in_quotes && isspace((unsigned char)*ptr))
+                break;
+
+            arg[len++] = *ptr++;
+        }
+
+        arg[len] = '\0';
+
+        if (*argc >= capacity) {
+            capacity *= 2;
+            *argv = realloc(*argv, capacity * sizeof(char *));
+            if (!*argv) {
+                perror("realloc");
+                exit(1);
+            }
+        }
+
+        (*argv)[*argc] = arg;
+        (*argc)++;
+    }
 }
 
 
@@ -209,11 +261,11 @@ int main(int argc, char *argv[]) {
 
         // Read the command line
         // TODO: Read the command line
-        fgets(command, sizeof(command), stdin)
+        fgets(command, sizeof(command), stdin);
 
         // Parse and call the command
         n_argc = 0;
-        parse_line(command, &n_argc, n_argv);
+        parse_line(command, &n_argc, &n_argv);
         parse_commands(n_argc, n_argv);
     }
 

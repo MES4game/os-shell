@@ -1,3 +1,7 @@
-*.exe
-.vscode
-.vscode/**
+*
+!.gitignore
+!LICENSE
+!README.md
+!main.c
+!src/*.c
+!includes/*.h
