@@ -1,3 +1,9 @@
+// CShell Project - New shell in C
+// Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
+// Date: 2025-03-17
+
+
+#include "all.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -5,122 +11,211 @@
 #include <pwd.h>
 
 
-// Project - New shell in C
-// Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
-// Date: 2025-03-17
-
-
 // Debug flag to print debug messages
 int DEBUG = 0;
 
-// Hidden flag to allow secret files/folders
-int HIDDEN = 0;
 
 /**
- * @brief Parse the line to get the command and the arguments.
+ * @brief Parse the line to get it as argc and argv.
+ * @param line The line to parse.
+ * @param argc Reference to the number of arguments for return.
+ * @param argv Reference to the arguments for return.
  */
-void parse_command(char *command, int *argc, char *argv[])
-{
-    // TODO
+void parse_line(char *line, int *argc, char *argv[]) {
+    fprintf(stdout, "Parsing line: %s\n", line);
 }
+
 
 /**
  * @brief Call the appropriate function with the arguments.
+ * @param argc The number of arguments.
+ * @param argv The arguments.
+ * @param argv2 The arguments from previous piped command.
+ * @param is_piped 1 if the command is piped, 0 otherwise.
+ * @return 0 if the program ran successfully.
+ * @see strcmp, execvp
  */
-int call_command(int argc, char *argv[])
-{
-    // TODO
+int call_command(int argc, char *argv[], char *argv2[], int is_piped) {
+    int end = 0;
+    char *input_file = NULL;
+    char *output_file = NULL;
+
+    while ((end < argc) && (strcmp(argv[end], "<") != 0) && (strcmp(argv[end], ">") != 0)) {
+        end++;
+    }
+
+    if ((end < argc) && (strcmp(argv[end], "<"))) {
+        end++;
+        input_file = argv[end];
+        end++;
+    }
+
+    if ((end < argc) && (strcmp(argv[end], ">"))) {
+        end++;
+        output_file = argv[end];
+        end++;
+    }
+
+    char *cmd[4096];
+    for (int i = 0; i < end; i++) {
+        cmd[i] = argv[i];
+    }
+    cmd[end] = NULL;
+
+    execvp(cmd[0], cmd);
+
     return 0;
 }
 
+
+/**
+ * @brief Parse arguments to call every commands in right order.
+ * @param argc The number of arguments.
+ * @param argv The arguments.
+ * @return 0 if the program ran successfully.
+ * @see strcmp, call_command, fork, exit, perror
+ */
+int parse_commands(int argc, char *argv[]) {
+    int start = 0, end = 0;
+    int return_code;
+    char *piped[4096];
+
+    while (end < argc) {
+        if (strcmp(argv[end], ";") == 0) {
+            call_command(end - start, &argv[start], piped, 0);
+            start = end + 1;
+        }
+
+        else if (strcmp(argv[end], "&&") == 0) {
+            return_code = call_command(end - start, &argv[start], piped, 0);
+
+            if (return_code == 0) {
+                start = end + 1;
+            }
+            else {
+                while (end < argc) {
+                    if (strcmp(argv[end], ";") == 0 || strcmp(argv[end], "&") == 0 || strcmp(argv[end], "||") == 0 || strcmp(argv[end], "|") == 0) {
+                        start = end + 1;
+                        end++;
+                        break;
+                    }
+                    end++;
+                }
+            }
+        }
+
+        else if (strcmp(argv[end], "||") == 0) {
+            return_code = call_command(end - start, &argv[start], piped, 0);
+
+            if (return_code != 0) {
+                start = end + 1;
+            }
+            else {
+                while (end < argc) {
+                    if (strcmp(argv[end], ";") == 0 || strcmp(argv[end], "&&") == 0 || strcmp(argv[end], "&") == 0 || strcmp(argv[end], "|") == 0) {
+                        start = end + 1;
+                        end++;
+                        break;
+                    }
+                    end++;
+                }
+            }
+        }
+
+        else if (strcmp(argv[end], "&") == 0) {
+            pid_t pid = fork();
+            if (pid == 0) {
+                call_command(end - start, &argv[start], piped, 0);
+                exit(0);
+            }
+            else if (pid < 0) {
+                perror("fork");
+                return 1;
+            }
+            start = end + 1;
+        }
+
+        else if (strcmp(argv[end], "|") == 0) {
+            // TODO: implement pipe output redirection to piped
+            call_command(end - start, &argv[start], piped, 1);
+            start = end + 1;
+        }
+
+        end++;
+    }
+
+    return 0;
+}
+
+
 /**
  * @brief Print the usage of the program.
- *
- * This function prints the usage of the program.
- *
  * @param program_name The name of the program.
- * @return
- * @see printf
+ * @see fprintf
  */
-void print_usage(char *program_name)
-{
-    fprintf(stdout, "Usage: %s [-d] [-a]\n", program_name);
+void print_usage(char *program_name) {
+    fprintf(stdout, "Usage: %s [Options]\n", program_name);
     fprintf(stdout, "Options:\n");
-    fprintf(stdout, "    -v    Verbose, debug mode\n");
-    fprintf(stdout, "    -a    allow secret files/folders\n");
+    fprintf(stdout, "    -h | --help    Print this help message\n");
+    fprintf(stdout, "    -v             Verbose, debug mode\n");
 }
+
 
 /**
  * @brief Parse the arguments of the program.
- *
- * This function parses the arguments of the program and sets the DEBUG and HIDDEN flags.
- *
  * @param argc The number of arguments.
  * @param argv The arguments.
- * @return
- * @see strcmp, isdigit, atoi, exit, print_usage, fprintf
+ * @see strcmp, print_usage, exit
  */
-void parse_arguments(int argc, char *argv[])
-{
-    for (int i = 1; i < argc; i++)
-    {
+void parse_arguments(int argc, char *argv[]) {
+    for (int i = 1; i < argc; i++) {
+        // Check if the argument is -h or --help
+        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+            // Print the usage and exit
+            print_usage(argv[0]);
+            exit(0);
+        }
+
         // Check if the argument is -v
-        if (strcmp(argv[i], "-v") == 0)
-        {
+        if (strcmp(argv[i], "-v") == 0) {
             // Set DEBUG
             DEBUG = 1;
             continue;
         }
-
-        // Check if the argument is -a
-        if (strcmp(argv[i], "-a") == 0)
-        {
-            // Set HIDDEN
-            HIDDEN = 1;
-            continue;
-        }
     }
 }
 
+
 /**
  * @brief Main function of the program.
- *
- * This function is the main function of the program.
- * It parses the arguments and do an interactive session as a CShell.
- *
  * @param argc The number of arguments.
  * @param argv The arguments.
  * @return 0 if the program ran successfully.
- * @see parse_arguments, fprintf
+ * @see parse_arguments, getuid, getpwuid, getcwd, fprintf, parse_line, parse_commands
  */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     // Parse the arguments
     parse_arguments(argc, argv);
 
-    int res;
-    uid_t uid;
     struct passwd *pw;
     char cwd[1024];
-    while (1)
-    {
+    char command[4096];
+    int n_argc;
+    char *n_argv[4096];
+    while (1) {
         // Print shell prompt
-        uid = getuid();
-        pw = getpwuid(uid);
-        fprintf(stdout, "CShell(%s)-%s> ", (pw ? pw->pw_name : "no user"), getcwd(cwd, sizeof(cwd)) != NULL ? cwd : "no directory");
+        pw = getpwuid(getuid());
+        fprintf(stdout, "CShell(%s) - %s > ", (pw ? pw->pw_name : "no user"), getcwd(cwd, sizeof(cwd)) != NULL ? cwd : "no directory");
 
         // Read the command line
-        char command[1024];
         // TODO: Read the command line
+        fgets(command, sizeof(command), stdin)
 
         // Parse and call the command
-        int n_argc = 0;
-        char *n_argv[1024];
-        parse_command(command, &n_argc, n_argv);
-        res = call_command(n_argc, n_argv);
-        if (res != 0)
-            break;
+        n_argc = 0;
+        parse_line(command, &n_argc, n_argv);
+        parse_commands(n_argc, n_argv);
     }
 
-    return res;
+    return 0;
 }
