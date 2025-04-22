@@ -2,11 +2,9 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
 
 /**
  * @brief Print the usage of the program.
@@ -17,13 +15,13 @@
  * @return
  * @see fprintf
  */
-void __rm_print_usage(char *program_name) {
+void __rm_print_usage(char *program_name)
+{
     // TODO: Implement the print_usage function
     fprintf(stdout, "Usage: %s\n", program_name);
     fprintf(stdout, "Options:\n");
     fprintf(stdout, "    -h | --help    Print this help message\n");
 }
-
 
 /**
  * @brief Parse the arguments of the program.
@@ -35,18 +33,20 @@ void __rm_print_usage(char *program_name) {
  * @return
  * @see strcmp, __rm_print_usage, exit
  */
-void __rm_parse_arguments(int argc, char *argv[]) {
+void __rm_parse_arguments(int argc, char *argv[])
+{
     // TODO: Implement the parse_arguments function
-    for (int i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++)
+    {
         // Check if the argument is -h or --help
-        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
+        {
             // Print the usage and exit
             __rm_print_usage(argv[0]);
             exit(0);
         }
     }
 }
-
 
 /**
  * @brief Main function of the program.
@@ -58,21 +58,31 @@ void __rm_parse_arguments(int argc, char *argv[]) {
  * @return 0 if the program ran successfully.
  * @see __rm_parse_arguments
  */
-int our_rm(int argc, char *argv[]) {
+int our_rm(int argc, char *argv[])
+{
     // Parse the arguments
     __rm_parse_arguments(argc, argv);
 
     // TODO: Implement the rm command
+    if (remove(argv[1]) == 0)
+    {
+        printf("File %s removed successfully.\n", argv[1]);
+    }
+    else
+    {
+        perror("Error removing file");
+        return 1;
+    }
 
     return 0;
 }
-
 
 /**
  * ONLY FOR COMPILATION
  * DO NOT TOUCH
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     // DO NOT TOUCH
     return our_rm(argc, argv);
 }
