@@ -4,8 +4,12 @@
 
 
 #include "cd.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <limits.h>
+#include <assert.h>
 
 
 char __cd_CWD[__cd_MAX_PATH_LEN];
@@ -36,6 +40,8 @@ int __cd_parse_arguments(int argc, char *argv[]) {
             return -1;
         }
     }
+
+    return 0;
 }
 
 

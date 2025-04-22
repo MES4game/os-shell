@@ -14,7 +14,7 @@ gcc src/func.c -Iincludes -Wall -g -o program.exe
 
 ## How to code
 - to add a new command:
-1. add the command in the `src` folder (e.g. `src/func.c`) with this skeleton:
+  1. add the command in the `src` folder (e.g. `src/func.c`) with this skeleton:
 ```c
 // CShell Project - New func command
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 }
 #endif
 ```
-2. add the header of the command in the `includes` folder (e.g. `includes/func.h`) with this skeleton:
+  2. add the header of the command in the `includes` folder (e.g. `includes/func.h`) with this skeleton:
 ```c
 // CShell Project - New func command
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
@@ -117,20 +117,20 @@ int our_func(int argc, char *argv[]);
 
 #endif
 ```
-3. add the header in the `includes/all.h` file:
+  3. add the header in the `includes/all.h` file:
 ```c
 #include "func.h"
 ```
-4. add the command in `call_command` function in `main.c` file:
+  4. add the command in `call_command` function in `main.c` file:
 ```c
 // TODO: see how to implement run of personal commands
 ```
 - to add a new global variable to a command:
-1. add the variable in the command file (e.g. `src/func.c`) with this skeleton:
+  1. add the variable in the command file (e.g. `src/func.c`) with this skeleton:
 ```c
 type_of_variable variable_name = value;
 ```
-2. add the variable in the header file (e.g. `includes/func.h`) with this skeleton:
+  2. add the variable in the header file (e.g. `includes/func.h`) with this skeleton:
 ```c
 // A description of the variable
 extern type_of_variable variable_name;
@@ -138,8 +138,7 @@ extern type_of_variable variable_name;
 
 
 ## TODO
-- [ ] fix `main.c`
-- [ ] fix `src/cp.c`, `src/cd.c` and `src/rm.c`
+- [ ] make `main.c` works (for now the shell do nothing)
 - [ ] implement redirection in `call_command` function in `main.c`
 - [ ] implement pipe in `parse_commands` and `call_command` functions in `main.c`
 - [ ] implement the run of personal commands in `call_command` function in `main.c`

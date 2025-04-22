@@ -34,12 +34,9 @@ void parse_line(const char *line, int *argc, char ***argv) {
 
         if (*ptr == '\0') break;
 
-        const char *start;
         char *arg;
         int in_quotes = 0;
         int len = 0;
-
-        start = ptr;
 
         // Estimate the max argument length
         arg = malloc(strlen(ptr) + 1);
@@ -114,6 +111,7 @@ int call_command(int argc, char *argv[], char *argv2[], int is_piped) {
     }
     cmd[end] = NULL;
 
+    // TODO: implement input/output redirection
     execvp(cmd[0], cmd);
 
     return 0;
@@ -253,7 +251,7 @@ int main(int argc, char *argv[]) {
     char cwd[1024];
     char command[4096];
     int n_argc;
-    char *n_argv[4096];
+    char **n_argv;
     while (1) {
         // Print shell prompt
         pw = getpwuid(getuid());

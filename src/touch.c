@@ -32,6 +32,8 @@ int __touch_parse_arguments(int argc, char *argv[]) {
             return -1;
         }
     }
+
+    return 0;
 }
 
 

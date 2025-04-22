@@ -32,6 +32,8 @@ int __mkdir_parse_arguments(int argc, char *argv[]) {
             return -1;
         }
     }
+
+    return 0;
 }
 
 

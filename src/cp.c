@@ -3,10 +3,15 @@
 // Date: 2025-03-17
 
 
+#define _GNU_SOURCE
 #include "cp.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <ctype.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <dirent.h>
 
 int __cp_DEBUG = 0;
 int __cp_SPACE = 0;
@@ -230,6 +235,8 @@ int __cp_parse_arguments(int argc, char *argv[]) {
             }
         }
     }
+
+    return 0;
 }
 
 
@@ -243,6 +250,9 @@ int our_cp(int argc, char *argv[]) {
     if (parse_result)       return parse_result;
 
     // Copy the file/folder
+    struct stat input_stat;
+    if (stat(argv[1], &input_stat) != 0 && __cp_DEBUG) fprintf(stderr, "%*s  Error reading permissions of %s\n", __cp_SPACE, "", argv[1]);
+
     int res;
     if (S_ISDIR(input_stat.st_mode)) res = __cp_copy_dir(argv[1], argv[2]);
     else                             res = __cp_copy_file(argv[1], argv[2]);
