@@ -3,7 +3,7 @@
 ## How to use
 - to run the complete project:
 ```bash
-gcc main.c src/*.c -Iincludes -Wall -g -o program.exe  # for now, it doesn't work, you have to remove src/*.c for it to work, but it won't load personal commands
+gcc main.c src/*.c -Iincludes -Wall -g -o program.exe
 ./program.exe
 ```
 - to run a command of the project:
