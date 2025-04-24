@@ -3,5 +3,7 @@
 !LICENSE
 !README.md
 !main.c
-!src/*.c
-!includes/*.h
+!src/
+!src/**
+!includes/
+!includes/**
