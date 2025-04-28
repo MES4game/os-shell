@@ -139,9 +139,9 @@ extern type_of_variable variable_name;
 
 ## TODO
 - [ ] make `main.c` works (for now the shell do nothing)
-- [ ] implement redirection in `call_command` function in `main.c`
-- [ ] implement pipe in `parse_commands` and `call_command` functions in `main.c`
 - [ ] implement the run of personal commands in `call_command` function in `main.c`
+- [ ] implement redirection in `call_command` function in `main.c`
+- [ ] implement pipe in `call_command` function in `main.c`
 - [ ] implement every command in src
 - [ ] rework function `parse_line` in `main.c`
 - [ ] rework display of the prompt

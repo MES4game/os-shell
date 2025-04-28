@@ -82,7 +82,6 @@ int call_command(int argc, char *argv[], char *argv2[], int *piped_end, int is_p
     sleep(2);
     fprintf(stdout, "call_command: Finished call of %s\n", argv[0]);
     fflush(stdout);
-    return 0;
 
     int end = 0;
     char *input_file = NULL;
@@ -113,6 +112,8 @@ int call_command(int argc, char *argv[], char *argv2[], int *piped_end, int is_p
     // TODO: implement all of our own functions call (cd, cp, rm, ...)
     // TODO: implement input/output redirection
     execvp(cmd[0], cmd);
+    // TODO: implement pipe of output
+    // e.g.: if is_piped != 0, then get the output into argv2 (i will do the transform from string to argc, argv)
 
     return 0;
 }
@@ -127,10 +128,6 @@ int parse_commands(int argc, char *argv[]) {
     char *piped[4096];
     int piped_end = 0;
 
-    // TODO: make piped editable by call_command, so it can pipe output to the next command
-    // TODO: reset piped to NULL after each call_command (if it is not piped to the next command)
-    // TODO: add number of args in piped to (end - start) in calls of call_command
-    // TODO: make a copy of argv from start to end when calling call_command (so it cannot affect the next command)
     while (end < argc) {
         if (strcmp(argv[end], ";") == 0) {
             call_command(end - start, &argv[start], piped, &piped_end, 0);
@@ -192,6 +189,10 @@ int parse_commands(int argc, char *argv[]) {
         }
         else {
             // TODO: add reset of piped here
+            // e.g. in python:
+            // for i in range(piped_end):
+            //     piped[i] = NULL
+            // piped_end = 0
         }
 
         end++;
