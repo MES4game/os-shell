@@ -20,7 +20,7 @@ void __ls_print_usage(char *program_name);
  * @param argv The arguments.
  * @return 0 if arguments are good, -1 if -h or --help used.
  */
-int __ls_parse_arguments(int argc, char *argv[]);
+int __ls_parse_arguments(int argc, char *argv[], int *show_all, int *long_format);
 
 
 /**
