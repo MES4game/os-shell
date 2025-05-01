@@ -2,7 +2,7 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
-// #include "main.h"
+#include "main.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -180,6 +180,18 @@ int call_command(int argc, char *argv[], char *argv2[], int *piped_end, int is_p
     if (strcmp(cmd[0], "mv") == 0)
     {
         our_mv(end, cmd);
+    }
+
+    if (strcmp(cmd[0], "history") == 0)
+    {
+        for (int i = 0; i < history_count; i++)
+        {
+            fprintf(stdout, "%d: %s", i + 1, history[i]);
+        }
+        if (history_count == 0)
+        {
+            fprintf(stdout, "No history available.\n");
+        }
     }
 
     // TODO: implement input/output redirection
@@ -387,6 +399,7 @@ int main(int argc, char *argv[])
         // Read the command line
         fgets(command, sizeof(command), stdin);
 
+        // Add commnand to history
         if (history_count < MAX_HISTORY)
         {
             history[history_count] = strdup(command);

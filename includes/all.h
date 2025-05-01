@@ -2,7 +2,6 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
-
 #ifndef ALL_H
 #define ALL_H
 
