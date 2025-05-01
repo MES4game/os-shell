@@ -11,6 +11,11 @@
 #include <pwd.h>
 #include <ctype.h>
 
+#define MAX_HISTORY 100
+
+char *history[MAX_HISTORY];
+int history_count = 0;
+
 int DEBUG = 0;
 
 /**
@@ -291,6 +296,21 @@ int main(int argc, char *argv[])
 
         // Read the command line
         fgets(command, sizeof(command), stdin);
+
+        if (history_count < MAX_HISTORY)
+        {
+            history[history_count] = strdup(command);
+            history_count++;
+        }
+        else
+        {
+            free(history[0]);
+            for (int i = 1; i < MAX_HISTORY; i++)
+            {
+                history[i - 1] = history[i];
+            }
+            history[MAX_HISTORY - 1] = strdup(command);
+        }
 
         // Parse and call the command
         n_argc = 0;
