@@ -314,6 +314,8 @@ int parse_commands(int argc, char *argv[])
         else
         {
             // TODO: add reset of piped here
+            piped_end = 0;
+            memset(piped, 0, sizeof(piped));
         }
 
         end++;
