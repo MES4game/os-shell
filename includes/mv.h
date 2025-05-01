@@ -2,17 +2,16 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
-
 #ifndef COMMAND_MV_H
 #define COMMAND_MV_H
 
+#include "cp.h"
 
 /**
  * @brief Print the usage of the program.
  * @param program_name The name of the program.
  */
 void __mv_print_usage(char *program_name);
-
 
 /**
  * @brief Parse the arguments of the program.
@@ -22,7 +21,6 @@ void __mv_print_usage(char *program_name);
  */
 int __mv_parse_arguments(int argc, char *argv[]);
 
-
 /**
  * @brief Main function of the program.
  * @param argc The number of arguments.
@@ -30,6 +28,5 @@ int __mv_parse_arguments(int argc, char *argv[]);
  * @return 0 if the program ran successfully.
  */
 int our_mv(int argc, char *argv[]);
-
 
 #endif
