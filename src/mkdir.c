@@ -70,7 +70,7 @@ int our_mkdir(int argc, char *argv[])
     return 0;
 }
 
-#ifndef TEST_MAIN
+#ifdef TEST_MAIN
 /**
  * ONLY FOR TESTING ALONE
  * DO NOT TOUCH

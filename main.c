@@ -2,7 +2,7 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
-#include "main.h"
+#include "includes/main.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -96,7 +96,7 @@ int call_command(int argc, char *argv[], char *argv2[], int *piped_end, int is_p
     sleep(2);
     fprintf(stdout, "call_command: Finished call of %s\n", argv[0]);
     fflush(stdout);
-    return 0;
+    // return 0;
 
     int end = 0;
     char *input_file = NULL;
@@ -419,6 +419,8 @@ int main(int argc, char *argv[])
         n_argc = 0;
         parse_line(command, &n_argc, &n_argv);
         parse_commands(n_argc, n_argv);
+
+        printf("command: %s", command);
     }
 
     return 0;
