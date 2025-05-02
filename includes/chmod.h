@@ -20,7 +20,7 @@ void __chmod_print_usage(char *program_name);
  * @param argv The arguments.
  * @return 0 if arguments are good, -1 if -h or --help used.
  */
-int __chmod_parse_arguments(int argc, char *argv[]);
+int __chmod_parse_arguments(int argc, char *argv[], char **mode_arg, char **file_arg);
 
 
 /**

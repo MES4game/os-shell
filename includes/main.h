@@ -7,11 +7,28 @@
 #define MAIN_H
 
 
-#include "all.h"
+#include "config.h"
+#include "cat.h"
+#include "cd.h"
+#include "chmod.h"
+#include "chown.h"
+#include "cp.h"
+#include "ls.h"
+#include "mkdir.h"
+#include "mv.h"
+#include "rm.h"
+#include "touch.h"
 
 
 // Debug flag to print debug messages
-extern int DEBUG;
+int DEBUG;
+
+
+/**
+ * @brief Free the string array.
+ * @param array_ptr The pointer to the string array to free.
+ */
+void free_string_array(char ***array_ptr);
 
 
 /**
@@ -31,7 +48,7 @@ void parse_line(const char *line, int *argc, char ***argv);
  * @param is_piped 1 if the command is piped, 0 otherwise.
  * @return 0 if the program ran successfully.
  */
-int call_command(int argc, char *argv[], char *argv2[], int *piped_end, int is_piped);
+int call_command(int argc, char **argv, int *piped_end, char ***piped, int is_piped);
 
 
 /**
@@ -40,7 +57,7 @@ int call_command(int argc, char *argv[], char *argv2[], int *piped_end, int is_p
  * @param argv The arguments.
  * @return 0 if the program ran successfully.
  */
-int parse_commands(int argc, char *argv[]);
+int parse_commands(int argc, char **argv);
 
 
 /**

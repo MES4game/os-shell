@@ -3,6 +3,7 @@
 // Date: 2025-03-17
 
 #include "mv.h"
+#include "cp.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

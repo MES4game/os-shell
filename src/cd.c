@@ -12,8 +12,7 @@
 #include <assert.h>
 
 
-char __cd_CWD[__cd_MAX_PATH_LEN];
-char __cd_PWD[__cd_MAX_PATH_LEN];
+char __cd_PWD[MAX_PATH_LENGTH];
 
 
 /**
@@ -71,7 +70,7 @@ int our_cd(int argc, char *argv[]) {
         path = __cd_PWD;
     }
 
-    char tmp[__cd_MAX_PATH_LEN];
+    char tmp[MAX_PATH_LENGTH];
 
     if (getcwd(tmp, sizeof(tmp)) == NULL) {
         fprintf(stderr, "cd: error getting current working directory\n");
@@ -79,7 +78,7 @@ int our_cd(int argc, char *argv[]) {
     }
 
     if (chdir(path) == 0) {
-        if (getcwd(__cd_CWD, sizeof(__cd_CWD)) != NULL) {
+        if (getcwd(CWD, sizeof(CWD)) != NULL) {
             // printf("Current working directory: %s\n", __cd_CWD);
             strcpy(__cd_PWD, tmp);
         }

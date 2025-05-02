@@ -7,12 +7,11 @@
 #define COMMAND_CD_H
 
 
-// Maximum path length
-#define __cd_MAX_PATH_LEN 4096
-// current working directory
-extern char __cd_CWD[__cd_MAX_PATH_LEN];
+#include "config.h"
+
+
 // previous working directory
-extern char __cd_PWD[__cd_MAX_PATH_LEN];
+extern char __cd_PWD[MAX_PATH_LENGTH];
 
 
 /**

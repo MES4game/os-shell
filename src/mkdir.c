@@ -2,7 +2,7 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
-// #include "mkdir.h"
+#include "mkdir.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>

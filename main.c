@@ -2,22 +2,31 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
-#include "includes/main.h"
+#include "main.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <pwd.h>
 #include <ctype.h>
-#include <fcntl.h> // pour open()
-
-#define MAX_HISTORY 100
-
-char *history[MAX_HISTORY];
-int history_count = 0;
+#include <fcntl.h>  // pour open()
 
 int DEBUG = 0;
+
+/**
+ * @see free
+ */
+void free_string_array(char ***array_ptr)
+{
+    if (array_ptr == NULL || *array_ptr == NULL) return;
+
+    for (int i = 0; (*array_ptr)[i] != NULL; ++i) free((*array_ptr)[i]);
+    free(*array_ptr);
+
+    *array_ptr = NULL;
+}
 
 /**
  * @see sizeof, malloc, isspace, strlen, perror, exit, realloc
@@ -80,122 +89,58 @@ void parse_line(const char *line, int *argc, char ***argv)
         (*argv)[*argc] = arg;
         (*argc)++;
     }
+
+    if (*argc >= capacity)
+    {
+        *argv = realloc(*argv, (capacity++) * sizeof(char *));
+        if (!*argv)
+        {
+            perror("realloc");
+            exit(1);
+        }
+    }
+
+    (*argv)[*argc] = NULL;
 }
 
 /**
  * @see strcmp, execvp
  */
-int call_command(int argc, char *argv[], char *argv2[], int *piped_end, int is_piped)
+int call_command(int argc, char **argv, int *piped_end, char ***piped, int is_piped)
 {
     // TODO: remove this when call_command is implemented, it is just for testing parse_commands
     fprintf(stdout, "call_command: command = %s, #args = %d, args:\n", argv[0], argc - 1);
-    for (int i = 1; i < argc; i++)
-    {
-        fprintf(stdout, "    %d. %s\n", i, argv[i]);
-    }
-    sleep(2);
-    fprintf(stdout, "call_command: Finished call of %s\n", argv[0]);
-    fflush(stdout);
-    // return 0;
+    for (int i = 1; i < argc; i++) fprintf(stdout, "    %d. %s\n", i, argv[i]);
 
     int end = 0;
     char *input_file = NULL;
     char *output_file = NULL;
 
-    while ((end < argc) && (strcmp(argv[end], "<") != 0) && (strcmp(argv[end], ">") != 0))
-    {
-        end++;
-    }
+    while ((end < argc) && (strcmp(argv[end], "<") != 0) && (strcmp(argv[end], ">") != 0)) end++;
 
-    if ((end < argc) && (strcmp(argv[end], "<")))
+    for (int i = end; i < argc - 1; i++)
     {
-        end++;
-        input_file = argv[end];
-        end++;
-    }
-
-    if ((end < argc) && (strcmp(argv[end], ">")))
-    {
-        end++;
-        output_file = argv[end];
-        end++;
-    }
-
-    char *cmd[4096];
-    for (int i = 0; i < end; i++)
-    {
-        cmd[i] = argv[i];
-    }
-    cmd[end] = NULL;
-
-    // TODO: implement all of our own functions call (cd, cp, rm, ...)
-    if (strcmp(cmd[0], "ls") == 0)
-    {
-        our_ls(end, cmd);
-    }
-
-    if (strcmp(cmd[0], "cd") == 0)
-    {
-        our_cd(end, cmd);
-    }
-
-    if (strcmp(cmd[0], "cp") == 0)
-    {
-        our_cp(end, cmd);
-    }
-    if (strcmp(cmd[0], "rm") == 0)
-    {
-        our_rm(end, cmd);
-    }
-
-    if (strcmp(cmd[0], "cat") == 0)
-    {
-        our_cat(end, cmd);
-    }
-
-    if (strcmp(cmd[0], "exit") == 0)
-    {
-        exit(0); // pour quitter directement le shell
-    }
-    if (strcmp(cmd[0], "chmod") == 0)
-    {
-        our_chmod(end, cmd);
-    }
-
-    if (strcmp(cmd[0], "chown") == 0)
-    {
-        our_chown(end, cmd);
-    }
-
-    if (strcmp(cmd[0], "mkdir") == 0)
-    {
-        our_mkdir(end, cmd);
-    }
-
-    if (strcmp(cmd[0], "touch") == 0)
-    {
-        our_touch(end, cmd);
-    }
-
-    if (strcmp(cmd[0], "mv") == 0)
-    {
-        our_mv(end, cmd);
-    }
-
-    if (strcmp(cmd[0], "history") == 0)
-    {
-        for (int i = 0; i < history_count; i++)
+        if (strcmp(argv[i], "<") == 0)
         {
-            fprintf(stdout, "%d: %s", i + 1, history[i]);
+            i++;
+            input_file = argv[i];
         }
-        if (history_count == 0)
+        else if (strcmp(argv[i], ">") == 0)
         {
-            fprintf(stdout, "No history available.\n");
+            i++;
+            output_file = argv[i];
         }
     }
+
+    int cmd_argc = end + *piped_end;
+    char **cmd_argv = malloc((cmd_argc + 1) * sizeof(char *));
+    for (int i = 0; i < end; i++)        cmd_argv[i] = argv[i];
+    for (int i = 0; i < *piped_end; i++) cmd_argv[i + end] = (*piped)[i];
+    cmd_argv[cmd_argc] = NULL;
+
+    free_string_array(piped);
 
     // TODO: implement input/output redirection
-
     // Gérer la redirection d'entrée et de sortie
     if (input_file != NULL)
     {
@@ -229,7 +174,34 @@ int call_command(int argc, char *argv[], char *argv2[], int *piped_end, int is_p
         close(fd_out);
     }
 
-    execvp(cmd[0], cmd);
+    // TODO: implement all of our own functions call (cd, cp, rm, ...)
+    if (strcmp(cmd_argv[0], "exit") == 0) exit(0);
+    else if (strcmp(cmd_argv[0], "cat") == 0)   our_cat(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "cd") == 0)    our_cd(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "chmod") == 0) our_chmod(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "chown") == 0) our_chown(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "cp") == 0)    our_cp(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "ls") == 0)    our_ls(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "mkdir") == 0) our_mkdir(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "mv") == 0)    our_mv(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "rm") == 0)    our_rm(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "touch") == 0) our_touch(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "history") == 0)
+    {
+        for (int i = 0; i < history_count; i++) fprintf(stdout, "%d: %s", i + 1, history[i]);
+        if (history_count == 0) fprintf(stdout, "No history available.\n");
+    }
+    else
+    {
+        pid_t pid = fork();
+        if (pid == 0)
+        {
+            execvp(cmd_argv[0], cmd_argv);
+            exit(0);
+        }
+        else if (pid < 0) perror("fork");
+        else wait(NULL); // Wait for all child processes to finish
+    }
 
     return 0;
 }
@@ -237,11 +209,11 @@ int call_command(int argc, char *argv[], char *argv2[], int *piped_end, int is_p
 /**
  * @see strcmp, call_command, fork, exit, perror
  */
-int parse_commands(int argc, char *argv[])
+int parse_commands(int argc, char **argv)
 {
     int start = 0, end = 0;
     int return_code;
-    char *piped[4096];
+    char **piped = NULL;
     int piped_end = 0;
 
     // TODO: make piped editable by call_command, so it can pipe output to the next command
@@ -250,95 +222,62 @@ int parse_commands(int argc, char *argv[])
     // TODO: make a copy of argv from start to end when calling call_command (so it cannot affect the next command)
     while (end < argc)
     {
-        if (strcmp(argv[end], ";") == 0)
-        {
-            call_command(end - start, &argv[start], piped, &piped_end, 0);
-            start = end + 1;
-        }
-
-        if (strcmp(argv[end], "&&") == 0)
-        {
-            return_code = call_command(end - start, &argv[start], piped, &piped_end, 0);
-
-            if (return_code == 0)
-            {
-                start = end + 1;
-            }
-            else
-            {
-                while (end < argc)
-                {
-                    if (strcmp(argv[end], ";") == 0 || strcmp(argv[end], "&") == 0 || strcmp(argv[end], "||") == 0 || strcmp(argv[end], "|") == 0)
-                    {
-                        start = end + 1;
-                        end++;
-                        break;
-                    }
-                    end++;
-                }
-            }
-        }
-
-        if (strcmp(argv[end], "||") == 0)
-        {
-            return_code = call_command(end - start, &argv[start], piped, &piped_end, 0);
-
-            if (return_code != 0)
-            {
-                start = end + 1;
-            }
-            else
-            {
-                while (end < argc)
-                {
-                    if (strcmp(argv[end], ";") == 0 || strcmp(argv[end], "&&") == 0 || strcmp(argv[end], "&") == 0 || strcmp(argv[end], "|") == 0)
-                    {
-                        start = end + 1;
-                        end++;
-                        break;
-                    }
-                    end++;
-                }
-            }
-        }
-
-        if (strcmp(argv[end], "&") == 0)
+        if (strcmp(argv[end], ";") == 0)      return_code = call_command(end - start, &argv[start], &piped_end, &piped, 0);
+        else if (strcmp(argv[end], "|") == 0) return_code = call_command(end - start, &argv[start], &piped_end, &piped, 1);
+        else if (strcmp(argv[end], "&") == 0)
         {
             pid_t pid = fork();
             if (pid == 0)
             {
-                call_command(end - start, &argv[start], piped, &piped_end, 0);
+                return_code = call_command(end - start, &argv[start], &piped_end, &piped, 0);
                 exit(0);
             }
-            else if (pid < 0)
-            {
-                perror("fork");
-                return 1;
-            }
-            start = end + 1;
+            else if (pid < 0) perror("fork");
         }
+        else if (strcmp(argv[end], "&&") == 0)
+        {
+            return_code = call_command(end - start, &argv[start], &piped_end, &piped, 0);
 
-        if (strcmp(argv[end], "|") == 0)
-        {
-            call_command(end - start, &argv[start], piped, &piped_end, 1);
-            start = end + 1;
+            if (return_code != 0)
+            {
+                while (end < argc)
+                {
+                    if (strcmp(argv[end], ";") == 0 || strcmp(argv[end], "&") == 0 || strcmp(argv[end], "||") == 0 || strcmp(argv[end], "|") == 0) break;
+                    end++;
+                }
+            }
         }
-        else
+        else if (strcmp(argv[end], "||") == 0)
         {
-            // TODO: add reset of piped here
-            piped_end = 0;
-            memset(piped, 0, sizeof(piped));
+            return_code = call_command(end - start, &argv[start], &piped_end, &piped, 0);
+
+            if (return_code == 0)
+            {
+                while (end < argc)
+                {
+                    if (strcmp(argv[end], ";") == 0 || strcmp(argv[end], "&&") == 0 || strcmp(argv[end], "&") == 0 || strcmp(argv[end], "|") == 0) break;
+                    end++;
+                }
+            }
+        }
+        else {
+            end++;
+            continue;
         }
 
         end++;
+        start = end;
     }
 
-    if (start < end)
-    {
-        call_command(end - start, &argv[start], piped, &piped_end, 0);
-    }
+    if (start < end) return_code = call_command(end - start, &argv[start], &piped_end, &piped, 0);
 
-    return 0;
+    int status;
+    pid_t wpid;
+    while ((wpid = wait(&status)) > 0) continue;
+
+    free_string_array(&piped);
+
+    return return_code;
 }
 
 /**
@@ -385,16 +324,19 @@ int main(int argc, char *argv[])
     // Parse the arguments
     parse_arguments(argc, argv);
 
+    // Initialize variables
+    initconfig();
+
     struct passwd *pw;
-    char cwd[1024];
-    char command[4096];
-    int n_argc;
-    char **n_argv;
+    char command[MAX_LINE_LENGTH];
+    int n_argc = 0;
+    char **n_argv = NULL;
+    int return_code = 0;
     while (1)
     {
         // Print shell prompt
         pw = getpwuid(getuid());
-        fprintf(stdout, "CShell(%s) - %s > ", (pw ? pw->pw_name : "no user"), getcwd(cwd, sizeof(cwd)) != NULL ? cwd : "no directory");
+        fprintf(stdout, "CShell(%s) - %s > ", (pw ? pw->pw_name : "no user"), CWD);
 
         // Read the command line
         fgets(command, sizeof(command), stdin);
@@ -415,12 +357,11 @@ int main(int argc, char *argv[])
             history[MAX_HISTORY - 1] = strdup(command);
         }
 
-        // Parse and call the command
+        // Parse line and call commands
         n_argc = 0;
+        free_string_array(&n_argv);
         parse_line(command, &n_argc, &n_argv);
-        parse_commands(n_argc, n_argv);
-
-        printf("command: %s", command);
+        return_code = parse_commands(n_argc, n_argv);
     }
 
     return 0;

@@ -65,6 +65,8 @@ int our_rm(int argc, char *argv[])
             return -1;
         }
     }
+
+    return 0;
 }
 
 #ifdef TEST_MAIN
