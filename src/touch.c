@@ -2,31 +2,38 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
-
 #include "touch.h"
 #include <stdio.h>
 #include <string.h>
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <utime.h>
+#include <errno.h>
 
 /**
  * @see fprintf
  */
-void __touch_print_usage(char *program_name) {
+void __touch_print_usage(char *program_name)
+{
     // TODO: Implement the print_usage function
     fprintf(stdout, "Usage: %s [Options]\n", program_name);
     fprintf(stdout, "Options:\n");
     fprintf(stdout, "    -h | --help    Print this help message\n");
 }
 
-
 /**
  * @see strcmp, __touch_print_usage
  */
-int __touch_parse_arguments(int argc, char *argv[]) {
+int __touch_parse_arguments(int argc, char *argv[])
+{
     // TODO: Implement the parse_arguments function
-    for (int i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++)
+    {
         // Check if the argument is -h or --help
-        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
+        {
             // Print the usage and return
             __touch_print_usage(argv[0]);
             return -1;
@@ -36,28 +43,66 @@ int __touch_parse_arguments(int argc, char *argv[]) {
     return 0;
 }
 
-
 /**
  * @see __touch_parse_arguments
  */
-int our_touch(int argc, char *argv[]) {
+int our_touch(int argc, char *argv[])
+{
     // Parse the arguments
     int parse_result = __touch_parse_arguments(argc, argv);
-    if (parse_result == -1) return 0;
-    if (parse_result)       return parse_result;
+    if (parse_result == -1)
+        return 0;
+    if (parse_result)
+        return parse_result;
 
     // TODO: Implement the touch command
 
+    if (argc < 2)
+    {
+        fprintf(stderr, "Error: No file specified.\n");
+        __touch_print_usage(argv[0]);
+        return -1;
+    }
+
+    // Check if the file exists
+    for (int i = 1; i < argc; i++)
+    {
+        const char *filename = argv[i];
+        struct stat st;
+
+        if (stat(filename, &st) == 0)
+        {
+            // File exists, update the timestamp
+            if (utime(filename, NULL) != 0)
+            {
+                fprintf(stderr, "Error: Unable to update timestamp for %s\n", filename);
+                return -1;
+            }
+            printf("Updated timestamp for %s\n", filename);
+        }
+        else
+        {
+            // File does not exist, create it
+            FILE *file = fopen(filename, "w");
+            if (file == NULL)
+            {
+                fprintf(stderr, "Error: Unable to create file %s\n", filename);
+                return -1;
+            }
+            fclose(file);
+        }
+    }
+
     return 0;
 }
-
 
 #ifdef TEST_MAIN
 /**
  * ONLY FOR TESTING ALONE
  * DO NOT TOUCH
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     // DO NOT TOUCH
     return our_touch(argc, argv);
 }
