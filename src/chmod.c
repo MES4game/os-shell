@@ -13,7 +13,7 @@
 /**
  * @see fprintf
  */
-void __chmod_print_usage(char *program_name)
+void _chmod_print_usage(const char *const program_name)
 {
     // TODO: Implement the print_usage function
     fprintf(stdout, "Usage: %s [Options]\n", program_name);
@@ -24,7 +24,7 @@ void __chmod_print_usage(char *program_name)
 /**
  * @see strcmp, __chmod_print_usage
  */
-int __chmod_parse_arguments(int argc, char *argv[], char **mode_arg, char **file_arg)
+int _chmod_parse_arguments(const int argc, const char *const *const argv, const char **const mode_arg, const char **const file_arg)
 {
     *mode_arg = NULL;
     *file_arg = NULL;
@@ -33,7 +33,7 @@ int __chmod_parse_arguments(int argc, char *argv[], char **mode_arg, char **file
     {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
         {
-            __chmod_print_usage(argv[0]);
+            _chmod_print_usage(argv[0]);
             return -1;
         }
         else if (argv[i][0] == '-' && strlen(argv[i]) > 1)
@@ -68,13 +68,13 @@ int __chmod_parse_arguments(int argc, char *argv[], char **mode_arg, char **file
 /**
  * @see __chmod_parse_arguments
  */
-int our_chmod(int argc, char *argv[])
+int our_chmod(const int argc, const char *const *const argv)
 {
-    char *mode_str;
-    char *filename;
+    const char *mode_str;
+    const char *filename;
 
     // Parse the arguments
-    int parse_result = __chmod_parse_arguments(argc, argv, &mode_str, &filename);
+    int parse_result = _chmod_parse_arguments(argc, argv, &mode_str, &filename);
     if (parse_result == -1)
         return 0;
     if (parse_result)

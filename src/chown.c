@@ -15,7 +15,7 @@
 /**
  * @see fprintf
  */
-void __chown_print_usage(char *program_name)
+void _chown_print_usage(const char *const program_name)
 {
     // TODO: Implement the print_usage function
     fprintf(stdout, "Usage: %s [Options]\n", program_name);
@@ -26,7 +26,7 @@ void __chown_print_usage(char *program_name)
 /**
  * @see strcmp, __chown_print_usage
  */
-int __chown_parse_arguments(int argc, char *argv[])
+int _chown_parse_arguments(const int argc, const char *const *const argv)
 {
     // TODO: Implement the parse_arguments function
     for (int i = 1; i < argc; i++)
@@ -35,7 +35,7 @@ int __chown_parse_arguments(int argc, char *argv[])
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
         {
             // Print the usage and return
-            __chown_print_usage(argv[0]);
+            _chown_print_usage(argv[0]);
             return -1;
         }
     }
@@ -46,10 +46,10 @@ int __chown_parse_arguments(int argc, char *argv[])
 /**
  * @see __chown_parse_arguments
  */
-int our_chown(int argc, char *argv[])
+int our_chown(const int argc, const char *const *const argv)
 {
     // Parse the arguments
-    int parse_result = __chown_parse_arguments(argc, argv);
+    int parse_result = _chown_parse_arguments(argc, argv);
     if (parse_result == -1)
         return 0;
     if (parse_result)
@@ -57,13 +57,13 @@ int our_chown(int argc, char *argv[])
     if (argc < 3)
     {
         fprintf(stderr, "Error: Not enough arguments\n");
-        __chown_print_usage(argv[0]);
+        _chown_print_usage(argv[0]);
         return -1;
     }
 
-    char *owner_group = argv[1];
-    char *owner = strtok(owner_group, ":");
-    char *group = strtok(NULL, ":");
+    const char *const owner_group = argv[1];
+    const char *const owner = strtok((char *)owner_group, ":");
+    const char *const group = strtok(NULL, ":");
 
     struct passwd *pwd = getpwnam(owner);
     if (!pwd)
@@ -87,7 +87,7 @@ int our_chown(int argc, char *argv[])
 
     for (int i = 2; i < argc; i++)
     {
-        char *file = argv[i];
+        const char *const file = argv[i];
         if (chown(file, uid, gid) != 0)
         {
             fprintf(stderr, "Error: Failed to change ownership of '%s': %s\n", file, strerror(errno));

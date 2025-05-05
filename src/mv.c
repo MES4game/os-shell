@@ -14,7 +14,7 @@
 /**
  * @see fprintf
  */
-void __mv_print_usage(char *program_name)
+void _mv_print_usage(const char *const program_name)
 {
     // TODO: Implement the print_usage function
     fprintf(stdout, "Usage: %s [Options]\n", program_name);
@@ -25,7 +25,7 @@ void __mv_print_usage(char *program_name)
 /**
  * @see strcmp, __mv_print_usage
  */
-int __mv_parse_arguments(int argc, char *argv[])
+int _mv_parse_arguments(const int argc, const char *const *const argv)
 {
     // TODO: Implement the parse_arguments function
     for (int i = 1; i < argc; i++)
@@ -34,7 +34,7 @@ int __mv_parse_arguments(int argc, char *argv[])
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
         {
             // Print the usage and return
-            __mv_print_usage(argv[0]);
+            _mv_print_usage(argv[0]);
             return -1;
         }
     }
@@ -45,10 +45,10 @@ int __mv_parse_arguments(int argc, char *argv[])
 /**
  * @see __mv_parse_arguments
  */
-int our_mv(int argc, char *argv[])
+int our_mv(const int argc, const char *const *const argv)
 {
     // Parse the arguments
-    int parse_result = __mv_parse_arguments(argc, argv);
+    int parse_result = _mv_parse_arguments(argc, argv);
     if (parse_result == -1)
         return 0;
     if (parse_result)
@@ -61,8 +61,8 @@ int our_mv(int argc, char *argv[])
         return 1;
     }
 
-    char *source = argv[1];
-    char *destination = argv[2];
+    const char *const source = argv[1];
+    const char *const destination = argv[2];
 
     if (rename(source, destination) == 0)
     {

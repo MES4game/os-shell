@@ -12,7 +12,7 @@
 /**
  * @see fprintf
  */
-void __mkdir_print_usage(char *program_name)
+void _mkdir_print_usage(const char *const program_name)
 {
     // TODO: Implement the print_usage function
     fprintf(stdout, "Usage: %s [Options]\n", program_name);
@@ -23,7 +23,7 @@ void __mkdir_print_usage(char *program_name)
 /**
  * @see strcmp, __mkdir_print_usage
  */
-int __mkdir_parse_arguments(int argc, char *argv[])
+int _mkdir_parse_arguments(const int argc, const char *const *const argv)
 {
     // TODO: Implement the parse_arguments function
     for (int i = 1; i < argc; i++)
@@ -32,7 +32,7 @@ int __mkdir_parse_arguments(int argc, char *argv[])
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
         {
             // Print the usage and return
-            __mkdir_print_usage(argv[0]);
+            _mkdir_print_usage(argv[0]);
             return -1;
         }
     }
@@ -43,10 +43,10 @@ int __mkdir_parse_arguments(int argc, char *argv[])
 /**
  * @see __mkdir_parse_arguments
  */
-int our_mkdir(int argc, char *argv[])
+int our_mkdir(const int argc, const char *const *const argv)
 {
     // Parse the arguments
-    int parse_result = __mkdir_parse_arguments(argc, argv);
+    int parse_result = _mkdir_parse_arguments(argc, argv);
     if (parse_result == -1)
         return 0;
     if (parse_result)

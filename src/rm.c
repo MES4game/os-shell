@@ -19,7 +19,7 @@ int force_flag;
 /**
  * @see fprintf
  */
-void __rm_print_usage(char *program_name)
+void _rm_print_usage(const char *const program_name)
 {
     // TODO: Implement the print_usage function
     fprintf(stdout, "Usage: %s [Options]\n", program_name);
@@ -33,7 +33,7 @@ void __rm_print_usage(char *program_name)
 /**
  * @see strcmp, __rm_print_usage
  */
-int __rm_parse_arguments(int argc, char *argv[])
+int _rm_parse_arguments(const int argc, const char *const *const argv)
 {
     // TODO: Implement the parse_arguments function
     for (int i = 1; i < argc; i++)
@@ -42,7 +42,7 @@ int __rm_parse_arguments(int argc, char *argv[])
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
         {
             // Print the usage and return
-            __rm_print_usage(argv[0]);
+            _rm_print_usage(argv[0]);
             return -1;
         }
 
@@ -159,13 +159,13 @@ int remove_recursively(const char *path)
 /**
  * @see __rm_parse_arguments
  */
-int our_rm(int argc, char *argv[])
+int our_rm(const int argc, const char *const *const argv)
 {
     recursive_flag = 0;
     verbose_flag = 0;
     force_flag = 0;
     // Parse the arguments
-    int parse_result = __rm_parse_arguments(argc, argv);
+    int parse_result = _rm_parse_arguments(argc, argv);
     if (parse_result == -1)
         return 0;
     if (parse_result)

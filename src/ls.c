@@ -16,7 +16,7 @@
 /**
  * Affiche l’aide
  */
-void __ls_print_usage(char *program_name) {
+void _ls_print_usage(const char *const program_name) {
     fprintf(stdout, "Usage: %s [Options]\n", program_name);
     fprintf(stdout, "Options:\n");
     fprintf(stdout, "    -h | --help    Print this help message\n");
@@ -27,10 +27,10 @@ void __ls_print_usage(char *program_name) {
 /**
  * Analyse les arguments
  */
-int __ls_parse_arguments(int argc, char *argv[], int *show_all, int *long_format) {
+int _ls_parse_arguments(const int argc, const char *const *const argv, int *const show_all, int *const long_format) {
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-            __ls_print_usage(argv[0]);
+            _ls_print_usage(argv[0]);
             return -1;
         } else if (strcmp(argv[i], "-a") == 0) {
             *show_all = 1;
@@ -47,11 +47,11 @@ int __ls_parse_arguments(int argc, char *argv[], int *show_all, int *long_format
 /**
  * Implémentation principale
  */
-int our_ls(int argc, char *argv[]) {
+int our_ls(const int argc, const char *const *const argv) {
     int show_all = 0;
     int long_format = 0;
 
-    int parse_result = __ls_parse_arguments(argc, argv, &show_all, &long_format);
+    int parse_result = _ls_parse_arguments(argc, argv, &show_all, &long_format);
     if (parse_result == -1) return 0;
     if (parse_result) return parse_result;
 

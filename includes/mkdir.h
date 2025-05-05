@@ -2,17 +2,14 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
-
 #ifndef COMMAND_MKDIR_H
 #define COMMAND_MKDIR_H
-
 
 /**
  * @brief Print the usage of the program.
  * @param program_name The name of the program.
  */
-void __mkdir_print_usage(char *program_name);
-
+void _mkdir_print_usage(const char *const program_name);
 
 /**
  * @brief Parse the arguments of the program.
@@ -20,8 +17,7 @@ void __mkdir_print_usage(char *program_name);
  * @param argv The arguments.
  * @return 0 if arguments are good, -1 if -h or --help used.
  */
-int __mkdir_parse_arguments(int argc, char *argv[]);
-
+int _mkdir_parse_arguments(const int argc, const char *const *const argv);
 
 /**
  * @brief Main function of the program.
@@ -29,7 +25,6 @@ int __mkdir_parse_arguments(int argc, char *argv[]);
  * @param argv The arguments.
  * @return 0 if the program ran successfully.
  */
-int our_mkdir(int argc, char *argv[]);
-
+int our_mkdir(const int argc, const char *const *const argv);
 
 #endif
