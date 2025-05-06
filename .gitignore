@@ -1,1 +1,9 @@
-*.exe
+*
+!.gitignore
+!LICENSE
+!README.md
+!main.c
+!src/
+!src/**
+!includes/
+!includes/**
