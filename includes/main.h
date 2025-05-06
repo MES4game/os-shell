@@ -43,7 +43,7 @@ int setting_envvar(const char *const arg);
  * @brief Call the appropriate function with the arguments.
  * @param argc The number of arguments.
  * @param argv The arguments.
- * @param use_pipe If last command piped its stdout and we have to take it (if no redirection).
+ * @param use_pipe If last command piped its stdout and we have to take it (if no stdin redirection).
  * @param pipe_used Id of in-memory file containing stdout of previous command if it was piped.
  * @param is_piped 1 if the command is piped, 0 otherwise.
  * @return 0 if the program ran successfully.
@@ -78,6 +78,11 @@ void print_usage(const char *const program_name);
  * @param argv The arguments.
  */
 void parse_arguments(const int argc, const char *const *const argv);
+
+/**
+ * @brief Print a message for when you log in.
+ */
+void print_login_message();
 
 /**
  * @brief Main function of the program.

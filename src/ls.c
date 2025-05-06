@@ -2,6 +2,7 @@
 // Author: Maxime DAUPHIN, Andrew ZIADEH and Abbas ALDIRANI
 // Date: 2025-03-17
 
+
 #include "ls.h"
 #include <stdio.h>
 #include <string.h>
@@ -13,39 +14,45 @@
 #include <grp.h>
 #include <time.h>
 
-/**
- * Affiche l’aide
- */
-void _ls_print_usage(const char *const program_name) {
-    fprintf(stdout, "Usage: %s [Options]\n", program_name);
-    fprintf(stdout, "Options:\n");
-    fprintf(stdout, "    -h | --help    Print this help message\n");
-    fprintf(stdout, "    -l            List in long format\n");
-    fprintf(stdout, "    -a            List all files, including hidden ones\n");
-}
 
 /**
- * Analyse les arguments
+ * @see printf
+ */
+void _ls_print_usage(const char *const program_name) {
+    printf("Usage: %s [Options]\n", program_name);
+    printf("Options:\n");
+    printf("    -h | --help    Print this help message\n");
+    printf("    -l            List in long format\n");
+    printf("    -a            List all files, including hidden ones\n");
+}
+
+
+/**
+ * @see strcmp, _ls_print_usage
  */
 int _ls_parse_arguments(const int argc, const char *const *const argv, int *const show_all, int *const long_format) {
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             _ls_print_usage(argv[0]);
             return -1;
-        } else if (strcmp(argv[i], "-a") == 0) {
-            *show_all = 1;
-        } else if (strcmp(argv[i], "-l") == 0) {
-            *long_format = 1;
-        } else {
-            fprintf(stderr, "ls: option inconnue : %s\n", argv[i]);
+        }
+
+        else if (strcmp(argv[i], "-a") == 0) *show_all = 1;
+
+        else if (strcmp(argv[i], "-l") == 0) *long_format = 1;
+
+        else {
+            perror("ls: option inconnue");
             return 1;
         }
     }
+
     return 0;
 }
 
+
 /**
- * Implémentation principale
+ * @see _ls_parse_arguments, opendir, perror, readdir, printf, stat, S_ISDIR, getpwuid, getgrgid, localtime, strftime, closedir
  */
 int our_ls(const int argc, const char *const *const argv) {
     int show_all = 0;
@@ -57,7 +64,7 @@ int our_ls(const int argc, const char *const *const argv) {
 
     DIR *dir = opendir(".");
     if (dir == NULL) {
-        fprintf(stderr, "ls: %s: %s\n", ".", strerror(errno));
+        perror("ls");
         return 1;
     }
 
@@ -65,9 +72,8 @@ int our_ls(const int argc, const char *const *const argv) {
     while ((entry = readdir(dir)) != NULL) {
         if (!show_all && entry->d_name[0] == '.') continue;
 
-        if (!long_format) {
-            printf("%s  ", entry->d_name);
-        } else {
+        if (!long_format) printf("%s  ", entry->d_name);
+        else {
             struct stat info;
             if (stat(entry->d_name, &info) == -1) {
                 perror("stat");
@@ -111,9 +117,14 @@ int our_ls(const int argc, const char *const *const argv) {
     return 0;
 }
 
+
 #ifdef TEST_MAIN
+/**
+ * ONLY FOR TESTING PURPOSES
+ * DO NOT TOUCH
+ */
 int main(int argc, char *argv[]) {
+    // DO NOT TOUCH
     return our_ls(argc, argv);
 }
 #endif
-

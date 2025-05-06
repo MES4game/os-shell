@@ -14,21 +14,19 @@
 
 
 /**
- * @see fprintf
+ * @see printf
  */
 void _cd_print_usage(const char *const program_name) {
-    // TODO: Implement the print_usage function
-    fprintf(stdout, "Usage: %s [Options]\n", program_name);
-    fprintf(stdout, "Options:\n");
-    fprintf(stdout, "    -h | --help    Print this help message\n");
+    printf("Usage: %s [Options]\n", program_name);
+    printf("Options:\n");
+    printf("    -h | --help    Print this help message\n");
 }
 
 
 /**
- * @see strcmp, __cd_print_usage
+ * @see strcmp, _cd_print_usage
  */
 int _cd_parse_arguments(const int argc, const char *const *const argv) {
-    // TODO: Implement the parse_arguments function
     for (int i = 1; i < argc; i++) {
         // Check if the argument is -h or --help
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
@@ -43,7 +41,7 @@ int _cd_parse_arguments(const int argc, const char *const *const argv) {
 
 
 /**
- * @see __cd_parse_arguments
+ * @see _cd_parse_arguments
  */
 int our_cd(const int argc, const char *const *const argv) {
     // Parse the arguments
@@ -55,25 +53,21 @@ int our_cd(const int argc, const char *const *const argv) {
     if (argc == 1 || ((argc == 2) && (strcmp(argv[1], "~") == 0))) {
         path = getenv("HOME");
         if (path == NULL) {
-            fprintf(stderr, "cd: HOME not set\n");
+            perror("cd: HOME not set");
             return 1;
         }
     }
 
     if ((argc == 2) && strcmp(argv[1], "-") == 0) {
         if (PWD[0] == '\0') {
-            fprintf(stderr, "cd: no previous directory\n");
+            perror("cd: no previous directory");
             return 1;
         }
         path = PWD;
     }
 
-    if (chdir(path) == 0) {
-        strncpy(PWD, CWD, MAX_PATH_LENGTH);
-    }
-    else {
-        perror("cd error");
-    }
+    if (chdir(path) == 0) strncpy(PWD, CWD, MAX_PATH_LENGTH);
+    else perror("cd error");
 
     return 0;
 }

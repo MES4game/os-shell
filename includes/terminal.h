@@ -6,11 +6,6 @@
 #define TERMINAL_H
 
 /**
- * @brief Disables raw mode for the terminal.
- */
-void disable_raw_mode();
-
-/**
  * @brief Enables raw mode for the terminal, to allow key-by-key input reading.
  */
 void enable_raw_mode();

@@ -20,6 +20,20 @@ void _rm_print_usage(const char *const program_name);
 int _rm_parse_arguments(const int argc, const char *const *const argv);
 
 /**
+ * @brief Check if path refer to a directory.
+ * @param path The path to check.
+ * @return 1 if it is a directory, 0 otherwise.
+ */
+int _rm_is_directory(const char *path);
+
+/**
+ * @brief Remove a directory recursively.
+ * @param path The path to directory to remove.
+ * @return 0 if the operation was successful, -1 otherwise.
+ */
+int _rm_remove_recursively(const char *path);
+
+/**
  * @brief Main function of the program.
  * @param argc The number of arguments.
  * @param argv The arguments.

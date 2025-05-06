@@ -5,6 +5,7 @@
 ```bash
 gcc main.c src/*.c -Iincludes -Wall -g -o program.exe
 ./program.exe
+rm -f program.exe
 ```
 
 ## How to code
@@ -18,10 +19,3 @@ gcc main.c src/*.c -Iincludes -Wall -g -o program.exe
 - to add a new global variable to the project:
   1. add the variable in the config file (e.g. `includes/config.h`) as `extern`
   2. declare the variable in the config file (e.g. `src/config.c`)
-
-
-## TODO
-- [ ] rework every function in `main.c` (comment, styling, etc.)
-- [ ] rework every command in `src` (fragment code, use `const`, use `config.c` for globals, etc.)
-- [ ] add intro when executing the project
-- [ ] look back at every include in files (no unused lib)

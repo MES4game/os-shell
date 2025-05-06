@@ -125,7 +125,7 @@ int our_terminal() {
             strncpy(HISTORY[0], CUR_LINE, MAX_LINE_LENGTH);
         }
 
-        // Send line to main.c
+        // Send line to main program
         strncpy(COMMAND, CUR_LINE, MAX_LINE_LENGTH);
         // Reset line attributes
         memset(CUR_LINE, '\0', MAX_LINE_LENGTH);
@@ -153,13 +153,13 @@ int our_terminal() {
     char *user = pw ? pw->pw_name : "no user";
 
     // Length of what is displayed (for descriptor position in display)
-    int prompt_length = strlen(user) + strlen(CWD) + 10;
+    int prompt_length = strlen(user) + strlen(CWD) + 11;
     // Length of the string (with invisible characters)
-    int prompt_size = prompt_length + 34;
+    int prompt_size = prompt_length + 30;
 
     // Create basic string for terminal
     char *prompt = malloc((prompt_size + 1) * sizeof(char));
-    snprintf(prompt, prompt_size, "\033[1;32m%s\033[0m@\033[1;32mCShell\033[0m:\033[1;34m%s\033[0m> ", user, CWD);
+    snprintf(prompt, prompt_size, "\033[32m%s\033[37m@\033[32mCShell\033[37m:\033[34m%s\033[0m > ", user, CWD);
     prompt[prompt_size + 1] = '\0';
 
     // display basic string and replace previous

@@ -86,7 +86,7 @@ int _cp_copy_file(const char *input_path, const char *output_path) {
 
 
 /**
- * @see opendir, stat, mkdir, chmod, readdir, closedir, free, __cp_path_file_concat, __cp_copy_file, fprintf
+ * @see opendir, stat, mkdir, chmod, readdir, closedir, free, _cp_path_file_concat, _cp_copy_file, fprintf
  */
 int _cp_copy_dir(const char *input_dir, const char *output_dir) {
     if (_cp_DEBUG) fprintf(stdout, "%*s- Copying folder %s to %s\n", _cp_SPACE, "", input_dir, output_dir);
@@ -152,21 +152,21 @@ int _cp_copy_dir(const char *input_dir, const char *output_dir) {
 
 
 /**
- * @see fprintf
+ * @see printf
  */
 void _cp_print_usage(const char *const program_name) {
-    fprintf(stdout, "Usage: %s <input_file_path> <output_file_path> [Options]\n", program_name);
-    fprintf(stdout, "Options:\n");
-    fprintf(stdout, "    -h | --help      Print this help message\n");
-    fprintf(stdout, "    -v               Verbose, debug mode\n");
-    fprintf(stdout, "    -a               Allow copy of secret files/folders\n");
-    fprintf(stdout, "    --buffer SIZE    Number of bytes for the buffer to read/write files\n");
-    fprintf(stdout, "                     SIZE > 0 and by default is 4096 bytes\n");
+    printf("Usage: %s <input_file_path> <output_file_path> [Options]\n", program_name);
+    printf("Options:\n");
+    printf("    -h | --help      Print this help message\n");
+    printf("    -v               Verbose, debug mode\n");
+    printf("    -a               Allow copy of secret files/folders\n");
+    printf("    --buffer SIZE    Number of bytes for the buffer to read/write files\n");
+    printf("                     SIZE > 0 and by default is 4096 bytes\n");
 }
 
 
 /**
- * @see strcmp, __cp_print_usage
+ * @see strcmp, _cp_print_usage
  */
 int _cp_parse_arguments(const int argc, const char *const *const argv) {
     // Check if the number of arguments is correct
@@ -183,7 +183,7 @@ int _cp_parse_arguments(const int argc, const char *const *const argv) {
         return 1;
     }
 
-    // Set __cp_DEBUG, __cp_HIDDEN and __cp_BUFFER_SIZE
+    // Set _cp_DEBUG, _cp_HIDDEN and _cp_BUFFER_SIZE
     for (int i = 1; i < argc; i++) {
         // Check if the argument is -h or --help
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
@@ -246,7 +246,7 @@ int _cp_parse_arguments(const int argc, const char *const *const argv) {
 
 
 /**
- * @see __cp_parse_arguments, S_ISDIR, __cp_copy_dir, __cp_copy_file
+ * @see _cp_parse_arguments, S_ISDIR, _cp_copy_dir, _cp_copy_file
  */
 int our_cp(const int argc, const char *const *const argv) {
     // Parse the arguments
