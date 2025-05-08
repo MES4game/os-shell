@@ -174,8 +174,9 @@ int our_rm(const int argc, const char *const *const argv) {
         else {
             // Remove the file
             if (remove(argv[i]) != 0) {
-                if (!_rm_force_flag) perror("Error removing file");
-                continue;
+                if (_rm_force_flag) continue;
+                perror("Error removing file");
+                return 1;
             }
             else if (_rm_verbose_flag) printf("Removed file '%s'\n", argv[i]);
         }

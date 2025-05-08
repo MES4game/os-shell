@@ -155,6 +155,8 @@ int call_command(int argc, char **argv, int *const use_pipe, const int pipe_used
     dup2(fd_out, STDOUT_FILENO);
     if (fd_out != pipe_used) close(fd_out);
 
+    int return_code = 0;
+
     if (setting_envvar(cmd_argv[0]));
     else if (strcmp(cmd_argv[0], "exit") == 0) {
         // free memory
@@ -175,16 +177,16 @@ int call_command(int argc, char **argv, int *const use_pipe, const int pipe_used
         for (int i = count - 1; i > -1; i--) printf("%d: %s\n", count - i, HISTORY[i]);
         if (count == 0) printf("No history available.\n");
     }
-    else if (strcmp(cmd_argv[0], "cat") == 0)   our_cat(cmd_argc, cmd_argv);
-    else if (strcmp(cmd_argv[0], "cd") == 0)    our_cd(cmd_argc, cmd_argv);
-    else if (strcmp(cmd_argv[0], "chmod") == 0) our_chmod(cmd_argc, cmd_argv);
-    else if (strcmp(cmd_argv[0], "chown") == 0) our_chown(cmd_argc, cmd_argv);
-    else if (strcmp(cmd_argv[0], "cp") == 0)    our_cp(cmd_argc, cmd_argv);
-    else if (strcmp(cmd_argv[0], "ls") == 0)    our_ls(cmd_argc, cmd_argv);
-    else if (strcmp(cmd_argv[0], "mkdir") == 0) our_mkdir(cmd_argc, cmd_argv);
-    else if (strcmp(cmd_argv[0], "mv") == 0)    our_mv(cmd_argc, cmd_argv);
-    else if (strcmp(cmd_argv[0], "rm") == 0)    our_rm(cmd_argc, cmd_argv);
-    else if (strcmp(cmd_argv[0], "touch") == 0) our_touch(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "cat") == 0)   return_code = our_cat(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "cd") == 0)    return_code = our_cd(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "chmod") == 0) return_code = our_chmod(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "chown") == 0) return_code = our_chown(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "cp") == 0)    return_code = our_cp(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "ls") == 0)    return_code = our_ls(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "mkdir") == 0) return_code = our_mkdir(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "mv") == 0)    return_code = our_mv(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "rm") == 0)    return_code = our_rm(cmd_argc, cmd_argv);
+    else if (strcmp(cmd_argv[0], "touch") == 0) return_code = our_touch(cmd_argc, cmd_argv);
     else {
         pid_t pid = fork();
         if (pid == 0) {
@@ -193,7 +195,7 @@ int call_command(int argc, char **argv, int *const use_pipe, const int pipe_used
             perror("execvp");
             exit(1);
         }
-        else if (pid > 0) wait(NULL);
+        else if (pid > 0) wait(&return_code);
     }
 
     // free memory
@@ -209,7 +211,7 @@ int call_command(int argc, char **argv, int *const use_pipe, const int pipe_used
     dup2(saved_stdin, STDIN_FILENO);
     close(saved_stdin);
 
-    return 0;
+    return return_code;
 }
 
 
